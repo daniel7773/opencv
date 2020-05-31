@@ -1,0 +1,34 @@
+void handleImage(Mat &surname, string file_name) {
+    cv::Mat gray;
+    cv::cvtColor(surname, gray, CV_BGR2GRAY);
+
+    Mat new_image = Mat::zeros(surname.size(), surname.type());
+
+    double alpha = 1.7; /*< Simple contrast control */
+    int beta = 1;       /*< Simple brightness control */
+    // cout << " Basic Linear Transforms " << endl;
+    // cout << "-------------------------" << endl;
+    // cout << "* Enter the alpha value [1.0-3.0]: "; cin >> alpha;
+    // cout << "* Enter the beta value [0-100]: ";    cin >> beta;
+    for (int y = 0; y < surname.rows; y++) {
+        for (int x = 0; x < surname.cols; x++) {
+            for (int c = 0; c < surname.channels(); c++) {
+                new_image.at<Vec3b>(y, x)[c] = saturate_cast<uchar>(
+                    alpha * surname.at<Vec3b>(y, x)[c] + beta);
+            }
+        }
+    }
+
+    cv::Vec3b pixelColor(0, 0, 0);
+    for (int y = 0; y < new_image.rows; y++) {
+        for (int x = 0; x < new_image.cols; x++) {
+            cv::Point2f point(x, y);
+            if (new_image.at<uchar>(point))
+                new_image.at<Vec3b>(cv::Point(x, y)) = pixelColor;
+        }
+    }
+
+    // imshow("Original Image", surname);
+    // imshow("New Image", new_image);
+    cv::imwrite("/home/user/tesseract_test/" + file_name, new_image);
+}
